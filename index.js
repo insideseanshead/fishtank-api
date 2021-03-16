@@ -14,9 +14,7 @@ app.use(express.json());
 
 
 app.use('/', allRoutes);
-app.get('/',(req,res)=>{
-    res.send('Welcome to my fishes!')
-})
+
 db.sequelize.sync({ force: true }).then(function() {
     app.listen(PORT, function(){
         console.log(`App listenting on PORT ${PORT}`);
