@@ -67,13 +67,25 @@ router.post('/login',(req,res)=>{
     })
 })
 
-router.get('/secrets',(req,res)=>{
+router.get('/secretProfile',(req,res)=>{
     const loggedInUser = checkAuthStatus(req);
     console.log(loggedInUser)
     if(!loggedInUser){
         return res.status(401).send("invalid token")
     }
-    res.status(200).send("Valid token");
+    db.User.findOne({
+        where:{
+            id:loggedInUser.id
+        },
+        include:[db.Tank]
+    }).then(dbUser=>{
+        res.json(dbUser)
+    }).catch(err=>{
+        console.log(err)
+        res.status(500).send("error occured")
+    })
 })
+
+
 
 module.exports = router
