@@ -4,6 +4,23 @@ const db = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const checkAuthStatus = request => {
+    if(!request.headers.authorization) {
+        return false
+    }
+    token = request.headers.authorization.split(' ')[1]
+    const loggedInUser = jwt.verify(token, 'secretString', (err,data) =>{
+        if(err) {
+            return false
+        }
+        else {
+            return data
+        }
+    });
+    console.log(loggedInUser)
+    return loggedInUser
+}
+
 
 router.get('/',(req,res)=>{
     db.User.findAll().then(dbUsers=>{
@@ -51,22 +68,12 @@ router.post('/login',(req,res)=>{
 })
 
 router.get('/secrets',(req,res)=>{
-    if(!req.headers.authorization) {
-        return res.status(401).send('no auth header')
-    }
-    // console.log(req.headers.authorization);
-    token = req.headers.authorization.split(' ')[1]
-    console.log(token)
-    const loggedInUser = jwt.verify(token, 'secretString', (err,data) =>{
-        if(err) {
-            return false
-        }
-        else {
-            return data
-        }
-    });
+    const loggedInUser = checkAuthStatus(req);
     console.log(loggedInUser)
-    res.json(loggedInUser)
+    if(!loggedInUser){
+        return res.status(401).send("invalid token")
+    }
+    res.status(200).send("Valid token");
 })
 
 module.exports = router
