@@ -8,7 +8,7 @@ const checkAuthStatus = request => {
         return false
     }
     token = request.headers.authorization.split(' ')[1]
-    const loggedInUser = jwt.verify(token, 'secretString', (err,data) =>{
+    const loggedInUser = jwt.verify(token, process.env.JWT_SECRET, (err,data) =>{
         if(err) {
             return false
         }

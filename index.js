@@ -1,8 +1,10 @@
 var express = require('express');
+require('dotenv').config();
 // Sets up express app
 // =====================================================================
 var app = express();
 var PORT = process.env.PORT || 8080;
+const cors = require('cors')
 var allRoutes = require('./controllers');
 
 // Requiring our models for syncing
@@ -12,6 +14,7 @@ var db = require('./models');
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
+app.use(cors())
 
 app.use('/', allRoutes);
 
