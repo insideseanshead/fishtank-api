@@ -14,7 +14,13 @@ var db = require('./models');
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
-app.use(cors())
+//Production CORS
+app.use(cors({
+    origin: ["https://seanfishtank.herokuapp.com/"]
+}))
+
+//DEV CORS
+// app.use(cors())
 
 app.use('/', allRoutes);
 
