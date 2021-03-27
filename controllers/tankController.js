@@ -29,6 +29,19 @@ router.get('/',(req,res)=>{
     })
 })
 
+router.get('/:id',(req,res)=>{
+    db.Tank.findOne({
+        where:{
+            id:req.params.id
+        }
+    }).then(dbTank=>{
+        res.json(dbTank);
+    }).catch(err=>{
+        console.log(err)
+        res.status(500).send('something went wrong')
+    })
+})
+
 router.post('/',(req,res)=>{
     const loggedInUser = checkAuthStatus(req);
     if(!loggedInUser){
@@ -43,6 +56,64 @@ router.post('/',(req,res)=>{
     }).catch(err=>{
         console.log(err)
         res.status(500).send('something went wrong')
+    })
+})
+
+router.put("/:id",(req,res)=>{
+    const loggedInUser = checkAuthStatus(req);
+    if(!loggedInUser){
+        return res.status(401).send('login first')
+    }
+    db.Tank.findOne({
+        where:{
+            id:req.params.id
+        }
+    }).then(tank=>{
+        if(loggedInUser.id===tank.UserId){
+            db.Tank.update({
+                where:{
+                    name:req.body.name
+                }
+            },{
+                where:{
+                    id:tank.id
+                }
+            }).then(editTank =>{
+                res.json(editTank)
+            }).catch(err=>{
+                console.log(err)
+                res.status(500).send('something went wrong')
+            })
+        } else {
+            return res.status(401).send("not your tank!")
+        }
+    })
+})
+
+router.delete("/:id",(req,res)=>{
+    const loggedInUser = checkAuthStatus(req);
+    if(!loggedInUser){
+        return res.status(401).send('login first')
+    }
+    db.Tank.findOne({
+        where:{
+            id:req.params.id
+        }
+    }).then(tank=>{
+        if(loggedInUser.id===tank.UserId){
+            db.Tank.destroy({
+                where:{
+                    id:tank.id
+                }
+            }).then(delTank =>{
+                res.json(delTank)
+            }).catch(err=>{
+                console.log(err)
+                res.status(500).send('something went wrong')
+            })
+        } else {
+            return res.status(401).send("not your tank!")
+        }
     })
 })
 
