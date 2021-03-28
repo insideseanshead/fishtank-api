@@ -78,7 +78,10 @@ router.get('/secretProfile',(req,res)=>{
         where:{
             id:loggedInUser.id
         },
-        include:[db.Tank]
+        include:[{
+            model:db.Tank,
+            include:[db.Fish]
+        }]
     }).then(dbUser=>{
         res.json(dbUser)
     }).catch(err=>{

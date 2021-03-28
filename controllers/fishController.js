@@ -21,10 +21,8 @@ const checkAuthStatus = request => {
 }
 
 router.get('/',(req,res)=>{
-    db.Tank.findAll({
-        include:[db.Fish]
-    }).then(tanks=>{
-        res.json(tanks);
+    db.Fish.findAll().then(fishs=>{
+        res.json(fishs);
     }).catch(err=>{
         console.log(err)
         res.status(500).send('something went wrong')
@@ -32,13 +30,12 @@ router.get('/',(req,res)=>{
 })
 
 router.get('/:id',(req,res)=>{
-    db.Tank.findOne({
+    db.Fish.findOne({
         where:{
             id:req.params.id
-        },
-        include:[db.Fish]
-    }).then(dbTank=>{
-        res.json(dbTank);
+        }
+    }).then(dbFish=>{
+        res.json(dbFish);
     }).catch(err=>{
         console.log(err)
         res.status(500).send('something went wrong')
@@ -51,11 +48,14 @@ router.post('/',(req,res)=>{
         return res.status(401).send('login first')
     }
     console.log(loggedInUser)
-    db.Tank.create({
+    db.Fish.create({
         name:req.body.name,
-        UserId:loggedInUser.id
-    }).then(newTank=>{
-        res.json(newTank)
+        color:req.body.color,
+        width:req.body.width,
+        UserId:loggedInUser.id,
+        TankId:req.body.tankId
+    }).then(newFish=>{
+        res.json(newFish)
     }).catch(err=>{
         console.log(err)
         res.status(500).send('something went wrong')
@@ -67,26 +67,29 @@ router.put("/:id",(req,res)=>{
     if(!loggedInUser){
         return res.status(401).send('login first')
     }
-    db.Tank.findOne({
+    db.Fish.findOne({
         where:{
             id:req.params.id
         }
-    }).then(tank=>{
-        if(loggedInUser.id===tank.UserId){
-            db.Tank.update({
-                name:req.body.name
+    }).then(fish=>{
+        if(loggedInUser.id===fish.UserId){
+            db.Fish.update({
+                name:req.body.name,
+                color:req.body.color,
+                width:req.body.width,
+                TankId:req.body.tankId
             },{
                 where:{
-                    id:tank.id
+                    id:fish.id
                 }
-            }).then(editTank =>{
-                res.json(editTank)
+            }).then(editFish =>{
+                res.json(editFish)
             }).catch(err=>{
                 console.log(err)
                 res.status(500).send('something went wrong')
             })
         } else {
-            return res.status(401).send("not your tank!")
+            return res.status(401).send("not your fish!")
         }
     })
 })
@@ -96,24 +99,24 @@ router.delete("/:id",(req,res)=>{
     if(!loggedInUser){
         return res.status(401).send('login first')
     }
-    db.Tank.findOne({
+    db.Fish.findOne({
         where:{
             id:req.params.id
         }
-    }).then(tank=>{
-        if(loggedInUser.id===tank.UserId){
-            db.Tank.destroy({
+    }).then(fish=>{
+        if(loggedInUser.id===fish.UserId){
+            db.Fish.destroy({
                 where:{
-                    id:tank.id
+                    id:fish.id
                 }
-            }).then(delTank =>{
-                res.json(delTank)
+            }).then(delFish =>{
+                res.json(delFish)
             }).catch(err=>{
                 console.log(err)
                 res.status(500).send('something went wrong')
             })
         } else {
-            return res.status(401).send("not your tank!")
+            return res.status(401).send("not your fish!")
         }
     })
 })
