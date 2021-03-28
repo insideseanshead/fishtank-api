@@ -90,6 +90,4 @@ router.get('/secretProfile',(req,res)=>{
     })
 })
 
-
-
 module.exports = router
