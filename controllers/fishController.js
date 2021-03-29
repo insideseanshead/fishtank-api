@@ -48,18 +48,29 @@ router.post('/',(req,res)=>{
         return res.status(401).send('login first')
     }
     console.log(loggedInUser)
-    db.Fish.create({
-        name:req.body.name,
-        color:req.body.color,
-        width:req.body.width,
-        UserId:loggedInUser.id,
-        TankId:req.body.tankId
-    }).then(newFish=>{
-        res.json(newFish)
-    }).catch(err=>{
-        console.log(err)
-        res.status(500).send('something went wrong')
+    db.Tank.findOne({
+        where:{
+            id:req.body.tankId
+        }
+    }).then(tankData=>{
+        if(tankData.UserId===loggedInUser.id){
+            db.Fish.create({
+                name:req.body.name,
+                color:req.body.color,
+                width:req.body.width,
+                UserId:loggedInUser.id,
+                TankId:req.body.tankId
+            }).then(newFish=>{
+                return res.json(newFish)
+            }).catch(err=>{
+                console.log(err)
+                return res.status(500).send('something went wrong')
+            })
+        }else{
+           return res.status(401).send('not your tank') 
+        }
     })
+    
 })
 
 router.put("/:id",(req,res)=>{
